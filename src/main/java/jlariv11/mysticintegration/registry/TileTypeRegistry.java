@@ -14,5 +14,8 @@ public class TileTypeRegistry {
     public static final RegistryObject<TileEntityType<GeneratorTile>> GENERATOR_TILE = TILE_TYPES.register(
             "generator_tile", () -> TileEntityType.Builder.of(GeneratorTile::new,
                     BlockRegistry.LIGHT_GENERATOR.get(), BlockRegistry.DARK_GENERATOR.get()).build(null));
+//    public static final RegistryObject<TileEntityType<DecayingLightTile>> DECAYING_LIGHT = TILE_TYPES.register(
+//            "decaying_light_tile", () -> TileEntityType.Builder.of(DecayingLightTile::new,
+//                    BlockRegistry.DECAYING_LIGHT_BLOCK.get()).build(null));
 
 }

@@ -3,6 +3,7 @@ package jlariv11.mysticintegration;
 import jlariv11.mysticintegration.registry.BlockRegistry;
 import jlariv11.mysticintegration.registry.ItemRegistry;
 import jlariv11.mysticintegration.registry.TileTypeRegistry;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
