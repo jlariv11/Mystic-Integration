@@ -1,6 +1,7 @@
 package jlariv11.mysticintegration.registry;
 
 import jlariv11.mysticintegration.MysticIntegration;
+import jlariv11.mysticintegration.blocks.ChargerBlock;
 import jlariv11.mysticintegration.blocks.DecayingLightBlock;
 import jlariv11.mysticintegration.blocks.GeneratorBlock;
 import jlariv11.mysticintegration.items.MysticHeadgearArmorItem;
@@ -25,6 +26,7 @@ public class BlockRegistry {
 
     public static final RegistryObject<Block> LIGHT_GENERATOR = BLOCK_REGISTER.register("light_generator", () -> new GeneratorBlock(EnumMagicType.LIGHT));
     public static final RegistryObject<Block> DARK_GENERATOR = BLOCK_REGISTER.register("dark_generator", () -> new GeneratorBlock(EnumMagicType.DARK));
+    public static final RegistryObject<Block> CHARGER = BLOCK_REGISTER.register("charger", ChargerBlock::new);
     public static final RegistryObject<Block> DECAYING_LIGHT_BLOCK = BLOCK_REGISTER.register("decating_light", DecayingLightBlock::new);
 
 

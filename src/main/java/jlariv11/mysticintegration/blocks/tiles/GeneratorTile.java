@@ -6,23 +6,66 @@ import jlariv11.mysticintegration.registry.TileTypeRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.monster.*;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.Tags;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.EnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import org.jline.utils.Log;
+import org.lwjgl.system.CallbackI;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GeneratorTile extends TileEntity implements ITickableTileEntity {
 
     private EnumMagicType type;
+    private int consumeTime;
+    private final int CONSUME_TIME_MAX = 20;
+    private boolean isRunning = false;
+    private int energyPerTick = 20;
+
+    LazyOptional<EnergyStorage> capabilityEnergyLazyOptional;
 
     public GeneratorTile() {
         super(TileTypeRegistry.GENERATOR_TILE.get());
         this.type = null;
+        this.consumeTime = CONSUME_TIME_MAX;
+        capabilityEnergyLazyOptional = LazyOptional.of(() -> new EnergyStorage(1000, Integer.MAX_VALUE, 20));
+    }
+
+
+    @Override
+    protected void invalidateCaps() {
+        super.invalidateCaps();
+        capabilityEnergyLazyOptional.invalidate();
+    }
+
+    @Nonnull
+    @Override
+    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
+
+        if(cap == CapabilityEnergy.ENERGY){
+            return capabilityEnergyLazyOptional.cast();
+        }
+
+        return super.getCapability(cap, side);
     }
 
     public EnumMagicType getMagicType() {
@@ -40,10 +83,10 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
             for(int y = 0; y < 5; y++){
                 for(int z = 0; z < 5; z++){
                     BlockPos pos = this.getBlockPos().offset(x, y, z);
+                    if(pos == this.getBlockPos())
+                        continue;
                     int light = this.getLevel().getLightEmission(pos);
                     if(light > 0){
-//                        Log.info("Found light block at: " + pos.getX() + " " + pos.getY() + " " + pos.getZ());
-//                        Log.info("Light level: " + light);
                         lightBlocks.add(pos);
                         DecayingLightBlock dlb = new DecayingLightBlock();
                         dlb.setLight(light);
@@ -57,11 +100,64 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
         return lightBlocks;
     }
 
+    private List<MonsterEntity> findAllEvil(){
+        AxisAlignedBB aabb = new AxisAlignedBB(this.getBlockPos().offset(5, 5, 5), this.getBlockPos().offset(-5, 0, -5));
+        return this.getLevel().getEntitiesOfClass(MonsterEntity.class, aabb);
+    }
+
     @Override
     public void tick() {
-        for(BlockPos lb : getLightBlocks()){
-
+        if(this.getLevel() == null)
+            return;
+        consumeTime--;
+        if(consumeTime <= 0) {
+            this.energyPerTick = 20;
+            if(this.type == EnumMagicType.LIGHT) {
+                List<BlockPos> lbs = getLightBlocks();
+                this.energyPerTick *= lbs.size();
+                for (BlockPos lb : lbs) {
+                    DecayingLightBlock dlb = (DecayingLightBlock) this.getLevel().getBlockState(lb).getBlock();
+                    dlb.decayLight(1);
+                }
+            }else{
+                List<MonsterEntity> evil = findAllEvil();
+                this.energyPerTick *= evil.size();
+                for(MonsterEntity e : evil){
+                    if(e.getHealth() - 1 <= 0){
+                        if(e instanceof CreeperEntity){
+                            PigEntity pig = new PigEntity(EntityType.PIG, this.getLevel());
+                            pig.setPos(e.position().x, e.position().y, e.position().z);
+                            this.getLevel().addFreshEntity(pig);
+                        }else if(e instanceof HuskEntity || e instanceof DrownedEntity) {
+                            ZombieEntity zombie = new ZombieEntity(EntityType.ZOMBIE, this.getLevel());
+                            zombie.setPos(e.position().x, e.position().y, e.position().z);
+                            this.getLevel().addFreshEntity(zombie);
+                        }else if(e instanceof ZombieVillagerEntity){
+                            VillagerEntity villager = new VillagerEntity(EntityType.VILLAGER, this.getLevel());
+                            villager.setVillagerData(((ZombieVillagerEntity) e).getVillagerData());
+                            villager.setPos(e.position().x, e.position().y, e.position().z);
+                            this.getLevel().addFreshEntity(villager);
+                        }else if(e instanceof ZombieEntity){
+                            VillagerEntity villager = new VillagerEntity(EntityType.VILLAGER, this.getLevel());
+                            villager.setPos(e.position().x, e.position().y, e.position().z);
+                            this.getLevel().addFreshEntity(villager);
+                        }else if(e instanceof WitherSkeletonEntity){
+                            SkeletonEntity skelly = new SkeletonEntity(EntityType.SKELETON, this.getLevel());
+                            skelly.setPos(e.position().x, e.position().y, e.position().z);
+                            this.getLevel().addFreshEntity(skelly);
+                        }
+                    }
+                    e.hurt(DamageSource.GENERIC, 1);
+                }
+            }
+            consumeTime = CONSUME_TIME_MAX;
         }
+
+        getCapability(CapabilityEnergy.ENERGY, null).ifPresent(cap ->{
+            cap.receiveEnergy(energyPerTick, false);
+
+        });
+
 
     }
 }
