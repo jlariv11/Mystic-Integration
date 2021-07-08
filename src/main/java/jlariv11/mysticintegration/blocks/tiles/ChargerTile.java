@@ -1,5 +1,6 @@
 package jlariv11.mysticintegration.blocks.tiles;
 
+import jlariv11.mysticintegration.MysticIntegration;
 import jlariv11.mysticintegration.blocks.ChargerBlock;
 import jlariv11.mysticintegration.items.MagicCrystalItem;
 import jlariv11.mysticintegration.registry.TileTypeRegistry;
@@ -75,9 +76,8 @@ public class ChargerTile extends TileEntity implements ITickableTileEntity {
 
                 if(crystal.getItem().getItem() instanceof MagicCrystalItem){
                     MagicCrystalItem crystalItem = (MagicCrystalItem) crystal.getItem().getItem();
-                    ChargerBlock charger = (ChargerBlock) this.getBlockState().getBlock();
 
-                    if(crystalItem.getType() == charger.getType()){
+                    if(crystalItem.getType() == this.getBlockState().getValue(ChargerBlock.MAGIC)){
                         chargable.getCapability(CapabilityEnergy.ENERGY).ifPresent(itemEnergy ->{
 
                             if(!itemEnergy.canReceive())
