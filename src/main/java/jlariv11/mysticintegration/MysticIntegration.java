@@ -1,13 +1,23 @@
 package jlariv11.mysticintegration;
 
+import jlariv11.mysticintegration.data.BlockModelGenerator;
+import jlariv11.mysticintegration.data.BlockStateGenerator;
+import jlariv11.mysticintegration.data.ItemModelGenerator;
+import jlariv11.mysticintegration.magic.EnumMagicType;
 import jlariv11.mysticintegration.registry.BlockRegistry;
 import jlariv11.mysticintegration.registry.ItemRegistry;
 import jlariv11.mysticintegration.registry.TileTypeRegistry;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.state.EnumProperty;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.jline.utils.Log;
+import org.lwjgl.system.CallbackI;
 
 @Mod("mysticintegration")
 public class MysticIntegration {
@@ -16,6 +26,7 @@ public class MysticIntegration {
 
     public MysticIntegration() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::dataGen);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
         BlockRegistry.BLOCK_REGISTER.register(FMLJavaModLoadingContext.get().getModEventBus());
         BlockRegistry.registerBlockItems();
@@ -29,6 +40,14 @@ public class MysticIntegration {
 
     private void clientSetup(final FMLClientSetupEvent evt){
 
+    }
+
+    public void dataGen(final GatherDataEvent evt){
+        if(evt.includeClient()) {
+            evt.getGenerator().addProvider(new BlockModelGenerator(evt.getGenerator(), evt.getExistingFileHelper()));
+            evt.getGenerator().addProvider(new BlockStateGenerator(evt.getGenerator(), evt.getExistingFileHelper()));
+            evt.getGenerator().addProvider(new ItemModelGenerator(evt.getGenerator(), evt.getExistingFileHelper()));
+        }
     }
 
 }

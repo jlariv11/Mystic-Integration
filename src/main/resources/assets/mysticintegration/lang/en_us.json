@@ -1,5 +1,9 @@
 {
   "item.mysticintegration.mystic_headgear": "Mystic Headgear",
+  "item.mysticintegration.magic_crystal_light": "Magic Crystal",
+  "item.mysticintegration.magic_crystal_dark": "Magic Crystal",
   "block.mysticintegration.light_generator": "Light Generator",
-  "block.mysticintegration.dark_generator": "Dark Generator"
+  "block.mysticintegration.dark_generator": "Dark Generator",
+  "block.mysticintegration.charger": "Charger",
+  "block.mysticintegration.cable": "Cable"
 }
