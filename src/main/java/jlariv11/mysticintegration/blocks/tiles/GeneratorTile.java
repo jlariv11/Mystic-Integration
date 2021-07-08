@@ -78,19 +78,20 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
 
     private List<BlockPos> getLightBlocks(){
         List<BlockPos> lightBlocks = new ArrayList<>();
-
-        for(int x = 0; x < 5; x++){
-            for(int y = 0; y < 5; y++){
-                for(int z = 0; z < 5; z++){
+        for(int x = 2; x > -3; x--){
+            for(int y = 4; y > -1; y--){
+                for(int z = 2; z > -3; z--){
                     BlockPos pos = this.getBlockPos().offset(x, y, z);
                     if(pos == this.getBlockPos())
                         continue;
                     int light = this.getLevel().getLightEmission(pos);
                     if(light > 0){
                         lightBlocks.add(pos);
-                        DecayingLightBlock dlb = new DecayingLightBlock();
-                        dlb.setLight(light);
-                        this.getLevel().setBlock(pos, dlb.defaultBlockState(), 0);
+                        if(!(this.getLevel().getBlockState(pos).getBlock() instanceof DecayingLightBlock)) {
+                            DecayingLightBlock dlb = new DecayingLightBlock();
+                            dlb.setLight(light);
+                            this.getLevel().setBlock(pos, dlb.defaultBlockState(), 0);
+                        }
                     }
                 }
             }
@@ -116,8 +117,11 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
                 List<BlockPos> lbs = getLightBlocks();
                 this.energyPerTick *= lbs.size();
                 for (BlockPos lb : lbs) {
-                    DecayingLightBlock dlb = (DecayingLightBlock) this.getLevel().getBlockState(lb).getBlock();
-                    dlb.decayLight(1);
+                    if(this.getLevel().getBlockState(lb).getBlock() instanceof DecayingLightBlock) {
+                        DecayingLightBlock dlb = (DecayingLightBlock) this.getLevel().getBlockState(lb).getBlock();
+                        dlb.decayLight(1);
+                        this.getLevel().getBlockTicks().scheduleTick(lb, dlb, 4);
+                    }
                 }
             }else{
                 List<MonsterEntity> evil = findAllEvil();
@@ -157,6 +161,20 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
             cap.receiveEnergy(energyPerTick, false);
 
         });
+
+        for(Direction dir : Direction.values()){
+            BlockPos tilePos = this.getBlockPos().relative(dir);
+            TileEntity energyTile = this.getLevel().getBlockEntity(tilePos);
+            if(energyTile != null){
+                energyTile.getCapability(CapabilityEnergy.ENERGY).ifPresent(tileEnergy ->{
+                    this.getCapability(CapabilityEnergy.ENERGY).ifPresent(genEnergy ->{
+                        if(tileEnergy.canReceive()){
+                            genEnergy.extractEnergy(tileEnergy.receiveEnergy(20, false), false);
+                        }
+                    });
+                });
+            }
+        }
 
 
     }

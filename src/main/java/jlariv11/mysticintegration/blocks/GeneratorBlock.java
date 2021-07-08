@@ -8,17 +8,12 @@ import net.minecraft.world.IBlockReader;
 
 import javax.annotation.Nullable;
 
-public class GeneratorBlock extends BaseBlock{
+public class GeneratorBlock extends TestPowerBlock{
 
     private EnumMagicType type;
 
     public GeneratorBlock(EnumMagicType type) {
         this.type = type;
-    }
-
-    @Override
-    public boolean hasTileEntity(BlockState state) {
-        return true;
     }
 
     @Nullable
