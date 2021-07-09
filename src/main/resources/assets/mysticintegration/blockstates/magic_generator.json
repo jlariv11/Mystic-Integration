@@ -1,0 +1,49 @@
+{
+  "variants": {
+    "facing=east,magic=light": {
+      "model": "mysticintegration:block/magic_generator_light",
+      "y": 90
+    },
+    "facing=east,magic=dark": {
+      "model": "mysticintegration:block/magic_generator_dark",
+      "y": 90
+    },
+    "facing=east,magic=none": {
+      "model": "mysticintegration:block/magic_generator",
+      "y": 90
+    },
+    "facing=north,magic=light": {
+      "model": "mysticintegration:block/magic_generator_light"
+    },
+    "facing=north,magic=dark": {
+      "model": "mysticintegration:block/magic_generator_dark"
+    },
+    "facing=north,magic=none": {
+      "model": "mysticintegration:block/magic_generator"
+    },
+    "facing=south,magic=light": {
+      "model": "mysticintegration:block/magic_generator_light",
+      "y": 180
+    },
+    "facing=south,magic=dark": {
+      "model": "mysticintegration:block/magic_generator_dark",
+      "y": 180
+    },
+    "facing=south,magic=none": {
+      "model": "mysticintegration:block/magic_generator",
+      "y": 180
+    },
+    "facing=west,magic=light": {
+      "model": "mysticintegration:block/magic_generator_light",
+      "y": 270
+    },
+    "facing=west,magic=dark": {
+      "model": "mysticintegration:block/magic_generator_dark",
+      "y": 270
+    },
+    "facing=west,magic=none": {
+      "model": "mysticintegration:block/magic_generator",
+      "y": 270
+    }
+  }
+}
