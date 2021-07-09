@@ -25,8 +25,7 @@ public class BlockRegistry {
 
     public static final DeferredRegister<Block> BLOCK_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCKS, MysticIntegration.MODID);
 
-    public static final RegistryObject<Block> LIGHT_GENERATOR = BLOCK_REGISTER.register("light_generator", () -> new GeneratorBlock(EnumMagicType.LIGHT));
-    public static final RegistryObject<Block> DARK_GENERATOR = BLOCK_REGISTER.register("dark_generator", () -> new GeneratorBlock(EnumMagicType.DARK));
+    public static final RegistryObject<Block> MAGIC_GENERATOR = BLOCK_REGISTER.register("magic_generator", GeneratorBlock::new);
     public static final RegistryObject<Block> CHARGER = BLOCK_REGISTER.register("charger", ChargerBlock::new);
     public static final RegistryObject<Block> TEMP_CABLE = BLOCK_REGISTER.register("cable", CableBlock::new);
     public static final RegistryObject<Block> DECAYING_LIGHT_BLOCK = BLOCK_REGISTER.register("decaying_light", DecayingLightBlock::new);

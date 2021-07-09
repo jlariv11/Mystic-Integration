@@ -25,11 +25,12 @@ import org.jline.utils.Log;
 
 import javax.annotation.Nullable;
 
+import static jlariv11.mysticintegration.MysticIntegration.MAGIC;
+
 public class ChargerBlock extends TestPowerBlock{
 
     //Dark type will charge items with dark affinity
     //Light type will charge items with light affinity
-    public static final EnumProperty<EnumMagicType> MAGIC = EnumProperty.create("magic", EnumMagicType.class);
 
     public ChargerBlock() {
         this.registerDefaultState(this.defaultBlockState().setValue(MAGIC, EnumMagicType.NONE));
@@ -54,6 +55,10 @@ public class ChargerBlock extends TestPowerBlock{
         return state.getValue(MAGIC);
     }
 
+    @Override
+    public boolean hasTileEntity(BlockState state) {
+        return getType(state) != EnumMagicType.NONE;
+    }
 
     @Nullable
     @Override

@@ -77,7 +77,7 @@ public class ChargerTile extends TileEntity implements ITickableTileEntity {
                 if(crystal.getItem().getItem() instanceof MagicCrystalItem){
                     MagicCrystalItem crystalItem = (MagicCrystalItem) crystal.getItem().getItem();
 
-                    if(crystalItem.getType() == this.getBlockState().getValue(ChargerBlock.MAGIC)){
+                    if(crystalItem.getType() == this.getBlockState().getValue(MysticIntegration.MAGIC)){
                         chargable.getCapability(CapabilityEnergy.ENERGY).ifPresent(itemEnergy ->{
 
                             if(!itemEnergy.canReceive())

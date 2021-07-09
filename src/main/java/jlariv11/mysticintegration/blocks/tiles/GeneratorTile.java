@@ -33,9 +33,10 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jlariv11.mysticintegration.MysticIntegration.MAGIC;
+
 public class GeneratorTile extends TileEntity implements ITickableTileEntity {
 
-    private EnumMagicType type;
     private int consumeTime;
     private final int CONSUME_TIME_MAX = 20;
     private boolean isRunning = false;
@@ -45,7 +46,6 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
 
     public GeneratorTile() {
         super(TileTypeRegistry.GENERATOR_TILE.get());
-        this.type = null;
         this.consumeTime = CONSUME_TIME_MAX;
         capabilityEnergyLazyOptional = LazyOptional.of(() -> new EnergyStorage(1000, Integer.MAX_VALUE, 20));
     }
@@ -66,14 +66,6 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
         }
 
         return super.getCapability(cap, side);
-    }
-
-    public EnumMagicType getMagicType() {
-        return type;
-    }
-
-    public void setMagicType(EnumMagicType type) {
-        this.type = type;
     }
 
     private List<BlockPos> getLightBlocks(){
@@ -112,10 +104,9 @@ public class GeneratorTile extends TileEntity implements ITickableTileEntity {
             return;
         consumeTime--;
         if(consumeTime <= 0) {
-            this.energyPerTick = 20;
-            if(this.type == EnumMagicType.LIGHT) {
+            if(getBlockState().getValue(MAGIC) == EnumMagicType.LIGHT) {
                 List<BlockPos> lbs = getLightBlocks();
-                this.energyPerTick *= lbs.size();
+                this.energyPerTick = 20 * lbs.size();
                 for (BlockPos lb : lbs) {
                     if(this.getLevel().getBlockState(lb).getBlock() instanceof DecayingLightBlock) {
                         DecayingLightBlock dlb = (DecayingLightBlock) this.getLevel().getBlockState(lb).getBlock();

@@ -23,6 +23,8 @@ import org.lwjgl.system.CallbackI;
 public class MysticIntegration {
 
     public static final String MODID = "mysticintegration";
+    public static final EnumProperty<EnumMagicType> MAGIC = EnumProperty.create("magic", EnumMagicType.class);
+
 
     public MysticIntegration() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
