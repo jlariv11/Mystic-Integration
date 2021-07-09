@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "mysticintegration:block/light_generator"
+    }
+  }
+}

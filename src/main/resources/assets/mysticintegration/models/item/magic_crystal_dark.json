@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "mysticintegration:item/magic_crystal_dark"
+  }
+}
